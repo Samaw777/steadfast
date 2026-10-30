@@ -1,0 +1,58 @@
+{% extends "app.html" %}
+{% load icons %}
+
+{% block content %}
+<div class="page-header">
+  <p class="eyebrow">{{ greeting }}</p>
+  <h1>{{ user.display_name }}</h1>
+</div>
+
+<div class="panel streak">
+  <p class="eyebrow">Current streak</p>
+  <p class="streak-number">{{ streak }}</p>
+  <p class="small muted">day{{ streak|pluralize }} steady</p>
+</div>
+
+<div class="grid-2">
+  <div class="panel stat">
+    <p class="stat-label">Longest streak</p>
+    <p class="stat-value">{{ user.longest_streak_days }}</p>
+    <p class="tiny muted">days, so far</p>
+  </div>
+  <div class="panel stat">
+    <p class="stat-label">Check-ins</p>
+    <p class="stat-value">{{ week_checkins }}</p>
+    <p class="tiny muted">in the last 7 days</p>
+  </div>
+</div>
+
+<div class="grid-links">
+  <a href="{% url 'checkin' %}" class="panel link-card">
+    {% if checked_in_today %}
+      {% icon "circle-check" 22 "text-ok" %}
+      <div>
+        <p class="small">Today's check-in is done</p>
+        <p class="tiny muted">You can still edit it</p>
+      </div>
+    {% else %}
+      {% icon "notebook-pen" 22 "text-accent" %}
+      <div>
+        <p class="small">Check in for today</p>
+        <p class="tiny muted">Takes less than a minute</p>
+      </div>
+    {% endif %}
+  </a>
+  <a href="{% url 'urge' %}" class="panel link-card">
+    {% icon "life-buoy" 22 "text-warn" %}
+    <div>
+      <p class="small">Feeling an urge right now?</p>
+      <p class="tiny muted">Open the urge tool</p>
+    </div>
+  </a>
+</div>
+
+<section class="panel">
+  <h2 class="panel-title">Verse for today</h2>
+  {% include "tracker/_verse.html" %}
+</section>
+{% endblock %}

@@ -1,9 +1,13 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Working on Steadfast
 
-# This is NOT the Next.js you know
+Django 5.2 app with server-rendered templates; Supabase is used only as the Postgres database
+(Django handles accounts). See README.md for the layout.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+- Set up: `python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt`
+- Run tests: `python manage.py test` (uses SQLite unless `DATABASE_URL` is set)
+- Run locally: `DEBUG=1 python manage.py runserver`
+- After changing models: `python manage.py makemigrations tracker` and commit the migration.
+- Keep every table private: `tracker/apps.py` enables Row Level Security on all Django tables after
+  each `migrate`, because Supabase exposes the `public` schema via its REST API.
+- Templates live in the project-level `templates/` folder (it must take precedence over
+  `django.contrib.admin`'s own `registration/` templates); all styles are in `static/css/app.css`.

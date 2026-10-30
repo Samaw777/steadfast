@@ -1,0 +1,27 @@
+{% extends "app.html" %}
+
+{% block title %}Journal · Steadfast{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="eyebrow">Your history</p>
+  <h1>Journal</h1>
+</div>
+
+{% if entries %}
+  <div class="entries">
+    {% for entry in entries %}
+      <article class="panel entry">
+        <div class="entry-top">
+          <p class="small">{{ entry.day|date:"D, M j" }}{% if entry.day.year != today.year %}, {{ entry.day.year }}{% endif %}</p>
+          <span class="pill {% if entry.status == 'clean' %}text-ok{% else %}text-danger{% endif %}">{{ entry.get_status_display }}</span>
+        </div>
+        {% if entry.mood %}<p class="tiny muted mb-1">Mood: {{ entry.get_mood_display }}</p>{% endif %}
+        {% if entry.note %}<p class="entry-note">{{ entry.note }}</p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="small muted">No check-ins yet. Your first one will show up here.</p>
+{% endif %}
+{% endblock %}

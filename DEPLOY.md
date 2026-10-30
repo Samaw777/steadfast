@@ -1,48 +1,61 @@
 # Deploying Steadfast
 
-Two free accounts get this live: **Supabase** (database + auth) and **Vercel** (hosting).
-You'll also need a **GitHub** account to hold the code.
+Two free accounts get this live: **Supabase** (database) and **Render** (hosting). The code lives
+on GitHub.
 
-## 1. Create the Supabase project
+## 1. Get your Supabase connection string
 
-1. Go to [supabase.com](https://supabase.com) and sign up / log in.
-2. Click **New Project**. Pick a name and a database password (save it somewhere), choose a
-   region, and create it — takes about 2 minutes to provision.
-3. Once it's ready, open the **SQL Editor** (left sidebar), paste in the entire contents of
-   `supabase/migrations/001_init.sql` from this project, and click **Run**. This creates the
-   `profiles`, `checkins`, and `urge_logs` tables, the sign-up trigger, and locks every row to
-   its own account with Row Level Security.
-4. Optional: **Authentication → Providers → Email**, turn off **Confirm email** so you can sign
-   in immediately after creating an account instead of waiting on a confirmation email.
-5. Go to **Settings → API**. Copy the **Project URL** and the **anon public** key — you'll need
-   both in step 3 below.
+You already have a Supabase project. You don't need to run any SQL by hand — Django creates the
+tables itself.
 
-## 2. Push the code to GitHub
-
-1. Create a new (empty) repository on [github.com](https://github.com/new) — don't initialize it
-   with a README.
-2. From this project's folder:
+1. Open your project on [supabase.com](https://supabase.com/dashboard) and click **Connect** at the
+   top of the page.
+2. Under **Connection String**, pick the **Session pooler** option and copy the URI. It looks like:
    ```
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   git push -u origin main
+   postgresql://postgres.abcdefghijkl:[YOUR-PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres
    ```
+   Use the session pooler rather than the "Direct connection": the direct one is IPv6-only, and
+   Render (like many hosts) can only reach it over IPv4.
+3. Replace `[YOUR-PASSWORD]` with the database password you chose when creating the project
+   (forgot it? **Project Settings → Database → Reset database password**). If the password has
+   characters like `@`, `#`, `/` or `:`, URL-encode them (e.g. `@` → `%40`), or reset it to
+   letters and numbers only.
 
-## 3. Deploy on Vercel
+That full string is your `DATABASE_URL`.
 
-1. Go to [vercel.com](https://vercel.com) and sign up / log in with your GitHub account.
-2. Click **Add New → Project**, then select the repo you just pushed.
-3. Before deploying, expand **Environment Variables** and add:
-   - `NEXT_PUBLIC_SUPABASE_URL` — the Project URL from step 1.5
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — the anon key from step 1.5
-4. Click **Deploy**. After a minute or two you'll get a live URL like `steadfast.vercel.app`.
+## 2. Create the tables (optional, from your computer)
 
-## After launch
+Render runs migrations on every deploy, so you can skip this. To check your connection first:
 
-- **Custom domain**: Vercel → your project → Settings → Domains.
-- **Updating the app**: push new commits to `main` on GitHub; Vercel redeploys automatically.
-- **Everything is free at this scale**: Supabase's free tier and Vercel's hobby tier both cover a
-  single-user app like this comfortably.
+```bash
+cp .env.example .env    # paste DATABASE_URL in, and set SECRET_KEY
+python manage.py migrate
+```
+
+Afterwards, Supabase's **Table Editor** shows `tracker_user`, `tracker_checkin`,
+`tracker_urgelog` and Django's own tables, each marked as having RLS enabled.
+
+## 3. Deploy on Render
+
+1. Go to [render.com](https://render.com) and sign up / log in with GitHub.
+2. Click **New → Blueprint**, pick this repository, and confirm. Render reads `render.yaml`, which
+   sets up the build (`build.sh`: install, collect static files, migrate) and a generated
+   `SECRET_KEY`.
+3. When asked for `DATABASE_URL`, paste the connection string from step 1.
+4. Click **Apply**. After a few minutes you'll get a URL like `https://steadfast-xxxx.onrender.com`.
+   Open it and create your account.
+
+Render's free tier sleeps after 15 minutes without visitors, so the first page load after a quiet
+spell takes 30–60 seconds. The paid Starter plan stays awake.
+
+## Optional extras
+
+- **Password reset emails**: add `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`,
+  `EMAIL_HOST_PASSWORD` and `DEFAULT_FROM_EMAIL` in Render → your service → **Environment**. Any
+  SMTP provider works (Gmail with an app password, Resend, Brevo, …). Without them, reset links
+  only appear in Render's logs.
+- **Admin**: in Render → your service → **Shell**, run `python manage.py createsuperuser`, then
+  visit `/admin/`.
+- **Custom domain**: Render → your service → **Settings → Custom Domains**. Then add the domain to
+  `ALLOWED_HOSTS` and its `https://` origin to `CSRF_TRUSTED_ORIGINS`.
+- **Updating the app**: push to `main`; Render redeploys and runs any new migrations.

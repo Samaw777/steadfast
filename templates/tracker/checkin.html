@@ -1,0 +1,44 @@
+{% extends "app.html" %}
+
+{% block title %}Check-in · Steadfast{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <p class="eyebrow">{{ today|date:"l, F j" }}</p>
+  <h1>Daily check-in</h1>
+</div>
+
+<section class="panel">
+  <h2 class="panel-title">How did today go?</h2>
+  <form method="post" class="form">
+    {% csrf_token %}
+    <div class="choices status-choices">
+      {% for radio in form.status %}
+        <label>{{ radio.tag }}<span>{% if radio.data.value == "clean" %}I stayed steady{% else %}I slipped{% endif %}</span></label>
+      {% endfor %}
+    </div>
+
+    <p class="eyebrow mb-2">Mood</p>
+    <div class="choices compact">
+      {% for radio in form.mood %}
+        <label title="{{ radio.choice_label }}">{{ radio.tag }}<span>{{ radio.data.value }}</span></label>
+      {% endfor %}
+    </div>
+
+    <p class="eyebrow mb-2">Notes (optional)</p>
+    {{ form.note }}
+
+    {% include "registration/_errors.html" %}
+
+    {% if confirming_relapse %}
+      <input type="hidden" name="confirm" value="1">
+      <p class="small text-danger mb-4">
+        This will reset your streak counter. Your longest streak stays saved. Tap &ldquo;Confirm and save&rdquo; to go ahead.
+      </p>
+      <button type="submit" class="btn btn-primary">Confirm and save check-in</button>
+    {% else %}
+      <button type="submit" class="btn btn-primary">Save check-in</button>
+    {% endif %}
+  </form>
+</section>
+{% endblock %}

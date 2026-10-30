@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load icons %}
+
+{% block body %}
+{% with path=request.resolver_match.url_name %}
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">{% icon "leaf" 16 %} Steadfast</div>
+    <div class="topbar-user">
+      <span>{{ user.display_name }}</span>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="icon-button" title="Sign out">{% icon "log-out" 18 %}</button>
+      </form>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}">{% icon "house" 19 %}Home</a>
+    <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}">{% icon "notebook-pen" 19 %}Check-in</a>
+    <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}">{% icon "book-heart" 19 %}Journal</a>
+    <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}">{% icon "life-buoy" 19 %}Urge</a>
+  </nav>
+
+  <nav class="sidebar">
+    <div class="brand">{% icon "leaf" 16 %} Steadfast</div>
+    <div class="sidebar-links">
+      <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}">{% icon "house" 16 %}Home</a>
+      <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}">{% icon "notebook-pen" 16 %}Check-in</a>
+      <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}">{% icon "book-heart" 16 %}Journal</a>
+      <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}">{% icon "life-buoy" 16 %}Urge Tool</a>
+    </div>
+    <div class="sidebar-footer">
+      <span>{{ user.display_name }}</span>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="icon-button" title="Sign out">{% icon "log-out" 14 %}</button>
+      </form>
+    </div>
+  </nav>
+
+  <main class="main">
+    {% for message in messages %}
+      <p class="flash">{{ message }}</p>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "auth.html" %}
+{% load icons %}
+
+{% block title %}Create account · Steadfast{% endblock %}
+
+{% block content %}
+<h1>Start your journey</h1>
+<p class="lede">Your data is private to your account. One day at a time.</p>
+
+<form method="post" class="form">
+  {% csrf_token %}
+  {{ form.name }}
+  {{ form.email }}
+  {{ form.password1 }}
+  {{ form.password2 }}
+  {% include "registration/_errors.html" %}
+  <button type="submit" class="btn btn-primary">Create account {% icon "arrow-right" 16 %}</button>
+</form>
+
+<a class="link switch" href="{% url 'login' %}">Already have an account? Sign in</a>
+{% endblock %}
