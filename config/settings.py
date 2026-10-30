@@ -120,8 +120,11 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
 
-# Keep people signed in for 60 days.
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 60
+# Stay signed in until you sign out: sessions last a year and the clock restarts
+# on every visit, so regular use never hits the expiry.
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 365
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
 LANGUAGE_CODE = "en-us"

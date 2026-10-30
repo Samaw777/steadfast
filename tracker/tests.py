@@ -144,3 +144,13 @@ class MilestoneTests(TestCase):
         response = self.client.get(reverse("home"))
         self.assertContains(response, "1/7 checked in")
         self.assertContains(response, "The climb")
+
+
+class SessionTests(TestCase):
+    def test_sign_in_persists_for_a_year_and_renews(self):
+        User.objects.create_user(email="f@example.com", password="steady-path-42")
+        response = self.client.post(reverse("login"), {"username": "f@example.com", "password": "steady-path-42"})
+        cookie = response.cookies["sessionid"]
+        self.assertEqual(cookie["max-age"], 60 * 60 * 24 * 365)
+        # Any later visit sends a refreshed cookie, pushing the expiry forward.
+        self.assertIn("sessionid", self.client.get(reverse("home")).cookies)
