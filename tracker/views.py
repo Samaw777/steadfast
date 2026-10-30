@@ -4,14 +4,40 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
+from django.templatetags.static import static
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from . import studies, verses
 from .forms import CheckinForm, SignUpForm, StudyEntryForm
 from .models import Checkin, StudyEntry
+
+def _icon(path, size, purpose="any"):
+    return {"src": static(path), "sizes": f"{size}x{size}", "type": "image/png", "purpose": purpose}
+
+
+def manifest(request):
+    """Makes the site installable as a home-screen app that opens on the home page."""
+    data = {
+        "name": "Steadfast",
+        "short_name": "Steadfast",
+        "description": "Track your streak, check in daily, and grow in the Word.",
+        "id": "/",
+        "start_url": "/",
+        "scope": "/",
+        "display": "standalone",
+        "background_color": "#0a1214",
+        "theme_color": "#0a1214",
+        "icons": [
+            _icon("icons/icon-192.png", 192),
+            _icon("icons/icon-512.png", 512),
+            _icon("icons/icon-maskable-512.png", 512, "maskable"),
+        ],
+    }
+    return JsonResponse(data, content_type="application/manifest+json")
+
 
 def greeting():
     hour = timezone.localtime().hour

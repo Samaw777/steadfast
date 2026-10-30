@@ -171,3 +171,17 @@ class SessionTests(TestCase):
         self.assertEqual(cookie["max-age"], 60 * 60 * 24 * 365)
         # Any later visit sends a refreshed cookie, pushing the expiry forward.
         self.assertIn("sessionid", self.client.get(reverse("home")).cookies)
+
+
+class InstallableAppTests(TestCase):
+    def test_manifest_opens_on_home(self):
+        response = self.client.get(reverse("manifest"))
+        self.assertEqual(response["Content-Type"], "application/manifest+json")
+        data = response.json()
+        self.assertEqual((data["start_url"], data["scope"], data["display"]), ("/", "/", "standalone"))
+        self.assertEqual(len(data["icons"]), 3)
+
+    def test_pages_link_the_manifest_and_icon(self):
+        response = self.client.get(reverse("login"))
+        self.assertContains(response, 'rel="manifest"')
+        self.assertContains(response, 'rel="apple-touch-icon"')
