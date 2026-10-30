@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import Checkin, UrgeLog, User
+from .models import Checkin, StudyEntry, User
 
 
 @admin.register(User)
@@ -26,7 +26,6 @@ class CheckinAdmin(admin.ModelAdmin):
     list_filter = ["status"]
 
 
-@admin.register(UrgeLog)
-class UrgeLogAdmin(admin.ModelAdmin):
-    list_display = ["user", "outcome", "created_at"]
-    list_filter = ["outcome"]
+@admin.register(StudyEntry)
+class StudyEntryAdmin(admin.ModelAdmin):
+    list_display = ["user", "slug", "completed_at"]

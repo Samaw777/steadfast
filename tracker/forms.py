@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import Checkin, User
+from .models import Checkin, StudyEntry, User
 
 
 class SignUpForm(UserCreationForm):
@@ -41,3 +41,14 @@ class CheckinForm(forms.ModelForm):
         self.fields["mood"].choices = Checkin.Mood.choices
         self.fields["mood"].required = False
         self.fields["status"].choices = Checkin.Status.choices
+
+
+class StudyEntryForm(forms.ModelForm):
+    class Meta:
+        model = StudyEntry
+        fields = ["reflection"]
+        widgets = {
+            "reflection": forms.Textarea(
+                attrs={"rows": 5, "placeholder": "What stood out to you? What is God saying to you through this passage?"}
+            ),
+        }

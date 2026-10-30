@@ -1286,154 +1286,222 @@ section + .card {
   margin: 0.4rem 0 1.25rem;
 }
 
-/* ---------- Urge tool ---------- */
+/* ---------- Bible study ---------- */
 
-.breathe {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2.5rem 1.25rem 2rem;
+.plan-hero {
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 40%, rgb(95 211 161 / 0.12), transparent 60%),
-    linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.02));
-}
-.orb-wrap {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 13rem;
-  height: 13rem;
-  margin-bottom: 1.5rem;
-}
-.orb {
-  width: 8rem;
-  height: 8rem;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #d6fbe9, var(--accent) 45%, #1d7a5c);
-  box-shadow: 0 0 60px rgb(95 211 161 / 0.45), inset 0 -10px 30px rgb(0 0 0 / 0.25);
-  animation: breathe 10s ease-in-out infinite;
-}
-.ripple {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px solid rgb(95 211 161 / 0.4);
-  animation: ripple 5s ease-out infinite;
-}
-.ripple:nth-child(2) {
-  animation-delay: 1.66s;
-}
-.ripple:nth-child(3) {
-  animation-delay: 3.33s;
-}
-@keyframes breathe {
-  0%,
-  100% {
-    transform: scale(0.72);
-  }
-  50% {
-    transform: scale(1.12);
-  }
-}
-@keyframes ripple {
-  from {
-    transform: scale(0.55);
-    opacity: 0.9;
-  }
-  to {
-    transform: scale(1.15);
-    opacity: 0;
-  }
-}
-.breathe-cue {
-  position: relative;
-  height: 2rem;
-  width: 100%;
-  margin-bottom: 0.5rem;
-  font-family: var(--font-head);
-  font-size: 1.4rem;
-  font-style: italic;
-  text-align: center;
-}
-.breathe-cue span {
-  position: absolute;
-  inset: 0;
-  animation: cue 10s ease-in-out infinite;
-}
-.breathe-cue .out {
-  animation-delay: -5s;
-}
-@keyframes cue {
-  0%,
-  45% {
-    opacity: 1;
-  }
-  50%,
-  95% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-.urge-grid {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.urge-grid .card {
-  margin: 0;
-}
-@media (min-width: 720px) {
-  .urge-grid {
-    grid-template-columns: 1fr 1.3fr;
-  }
-}
-.urge-grid + .notice {
-  margin-top: 1.25rem;
-}
-
-.done {
-  overflow: hidden;
+  min-height: 20rem;
   padding: 0;
-  text-align: center;
+  display: flex;
+  align-items: flex-end;
+  border-color: var(--line-strong);
 }
-.done-art {
-  position: relative;
-  height: 13rem;
-}
-.done-art::after {
+.plan-hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, #0f1b1e, transparent 70%);
+  background: linear-gradient(0deg, rgb(8 18 20 / 0.92) 0%, rgb(8 18 20 / 0.35) 60%, transparent 85%);
 }
-.done-body {
+.plan-hero-body {
   position: relative;
-  padding: 0 1.5rem 2.25rem;
-  margin-top: -2rem;
+  z-index: 1;
+  width: 100%;
+  padding: 1.5rem;
 }
-.done-icon {
-  display: inline-grid;
+.plan-hero h2 {
+  margin-top: 0.35rem;
+  font-family: var(--font-head);
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.plan-summary {
+  max-width: 30rem;
+  margin-top: 0.5rem;
+  color: rgb(255 255 255 / 0.75);
+}
+.plan-cta {
+  margin-top: 1.25rem;
+}
+
+.plan-days {
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+@media (min-width: 720px) {
+  .plan-days {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.plan-day {
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.plan-day:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+}
+.plan-day:hover .action-arrow {
+  color: var(--text);
+  transform: translateX(3px);
+}
+.plan-day-num {
+  display: grid;
   place-items: center;
-  width: 4rem;
-  height: 4rem;
-  margin-bottom: 1.25rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex-shrink: 0;
   border-radius: 50%;
+  font-family: var(--font-head);
+  color: var(--muted);
+  border: 1.5px solid var(--line-strong);
+}
+.plan-day.done .plan-day-num {
   color: var(--on-accent);
   background: var(--accent);
-  box-shadow: 0 0 0 8px rgb(95 211 161 / 0.15), 0 0 40px var(--accent-glow);
+  border-color: transparent;
+  box-shadow: 0 0 14px var(--accent-glow);
 }
-.done h1 {
+.plan-day.current {
+  border-color: rgb(245 185 113 / 0.4);
+  background: linear-gradient(135deg, rgb(245 185 113 / 0.1), rgb(245 185 113 / 0.02));
+}
+.plan-day.current .plan-day-num {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.plan-day-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.plan-day-text strong {
+  font-weight: 600;
+}
+.plan-day-text small {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.chip-accent {
+  color: var(--gold);
+  border-color: rgb(245 185 113 / 0.35);
+  background: rgb(245 185 113 / 0.08);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.back-link:hover {
+  color: var(--text);
+}
+.flip {
+  transform: scaleX(-1);
+}
+
+.passage-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+@media (min-width: 720px) {
+  .passage-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+.passage-ref {
+  margin: 0.25rem 0 0.4rem;
   font-family: var(--font-head);
-  font-weight: 400;
-  font-size: 1.8rem;
-  line-height: 1.2;
+  font-size: 1.6rem;
 }
-.done p {
-  max-width: 26rem;
-  margin: 0.75rem auto 1.5rem;
+.btn-read {
+  flex-shrink: 0;
+}
+.btn-read:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgb(95 211 161 / 0.08);
+}
+
+.questions {
+  list-style: none;
+  counter-reset: q;
+  display: grid;
+  gap: 0.85rem;
+}
+.questions li {
+  counter-increment: q;
+  display: grid;
+  grid-template-columns: 1.9rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  line-height: 1.55;
+}
+.questions li::before {
+  content: counter(q);
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgb(95 211 161 / 0.12);
+  margin-top: -0.2rem;
+}
+
+.prayer-card {
+  margin-top: 1rem;
+  border-color: rgb(245 185 113 / 0.25);
+  background: linear-gradient(135deg, rgb(245 185 113 / 0.1), rgb(245 185 113 / 0.02));
+}
+.prayer {
+  margin-top: 0.5rem;
+  font-family: var(--font-head);
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+.study-form {
+  margin-top: 1rem;
+}
+.study-submit {
+  margin-top: 1.25rem;
+}
+.study-pager {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.study-pager a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.study-pager a:hover {
+  color: var(--text);
+  background: var(--surface);
 }
 
 /* ---------- Auth ---------- */
@@ -1559,11 +1627,5 @@ section + .card {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  .orb {
-    animation: breathe 16s ease-in-out infinite !important;
-  }
-  .breathe-cue .out {
-    display: none;
   }
 }

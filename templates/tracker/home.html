@@ -49,9 +49,9 @@
     <p class="stat-label">Check-ins this week</p>
   </div>
   <div class="card stat">
-    <span class="stat-icon blue">{% icon "shield-check" 18 %}</span>
-    <p class="stat-value">{{ urges_resisted }}</p>
-    <p class="stat-label">Urges overcome</p>
+    <span class="stat-icon blue">{% icon "book-open" 18 %}</span>
+    <p class="stat-value">{{ studies_done }}</p>
+    <p class="stat-label">Studies completed</p>
   </div>
 </section>
 
@@ -64,20 +64,31 @@
     </span>
     {% icon "arrow-right" 18 "action-arrow" %}
   </a>
-  <a href="{% url 'urge' %}" class="card action action-warm">
-    <span class="action-icon">{% icon "wind" 22 %}</span>
-    <span class="action-text">
-      <strong>Feeling an urge?</strong>
-      <small>Breathe through it with the urge tool</small>
-    </span>
-    {% icon "arrow-right" 18 "action-arrow" %}
-  </a>
+  {% if next_study %}
+    <a href="{% url 'study_detail' next_study.slug %}" class="card action action-warm">
+      <span class="action-icon">{% icon "book-open" 22 %}</span>
+      <span class="action-text">
+        <strong>Today's study: {{ next_study.title }}</strong>
+        <small>Day {{ next_study.day }} · {{ next_study.passage }}</small>
+      </span>
+      {% icon "arrow-right" 18 "action-arrow" %}
+    </a>
+  {% else %}
+    <a href="{% url 'study' %}" class="card action action-warm">
+      <span class="action-icon">{% icon "trophy" 22 %}</span>
+      <span class="action-text">
+        <strong>Bible study plan complete</strong>
+        <small>Revisit any day and your reflections</small>
+      </span>
+      {% icon "arrow-right" 18 "action-arrow" %}
+    </a>
+  {% endif %}
 </section>
 
 <section class="card">
   <div class="card-head">
     <h2 class="card-title">{% icon "mountain" 16 %} The climb</h2>
-    <span class="chip">Next: {{ progress.next }} days</span>
+    <span class="chip">Next: {{ progress.next }} day{{ progress.next|pluralize }}</span>
   </div>
   <ol class="trail">
     {% for m in milestones %}

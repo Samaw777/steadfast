@@ -7,7 +7,8 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("checkin/", views.checkin, name="checkin"),
     path("journal/", views.journal, name="journal"),
-    path("urge/", views.urge, name="urge"),
+    path("study/", views.study_index, name="study"),
+    path("study/<slug:slug>/", views.study_detail, name="study_detail"),
     # Accounts
     path("signup/", views.signup, name="signup"),
     path("login/", auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login"),

@@ -1,0 +1,45 @@
+{% extends "app.html" %}
+{% load icons %}
+
+{% block title %}Bible study · Steadfast{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <p class="eyebrow">Reading plan</p>
+  <h1>Bible <em>study</em></h1>
+</header>
+
+<section class="card plan-hero">
+  {% include "_landscape.html" with sun_y=plan.sun_y align="xMaxYMax" %}
+  <div class="plan-hero-body">
+    <p class="eyebrow eyebrow-light">{{ plan.total }}-day plan</p>
+    <h2>{{ plan_title }}</h2>
+    <p class="plan-summary">{{ plan_summary }}</p>
+    <div class="hero-progress">
+      <div class="bar"><span style="width: {{ plan.percent }}%"></span></div>
+      <p><strong>{{ plan.count }} of {{ plan.total }}</strong> days complete</p>
+    </div>
+    {% if plan.next %}
+      <a href="{% url 'study_detail' plan.next.slug %}" class="btn btn-primary plan-cta">
+        {% if plan.count %}Continue with day {{ plan.next.day }}{% else %}Start day 1{% endif %} {% icon "arrow-right" 18 %}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+<ol class="plan-days">
+  {% for item in days %}
+    <li>
+      <a href="{% url 'study_detail' item.study.slug %}" class="card plan-day{% if item.done %} done{% elif plan.next and item.study.slug == plan.next.slug %} current{% endif %}">
+        <span class="plan-day-num">{% if item.done %}{% icon "check" 16 %}{% else %}{{ item.study.day }}{% endif %}</span>
+        <span class="plan-day-text">
+          <strong>{{ item.study.title }}</strong>
+          <small>{{ item.study.passage }}</small>
+        </span>
+        {% if plan.next and item.study.slug == plan.next.slug %}<span class="chip chip-accent">Up next</span>{% endif %}
+        {% icon "arrow-right" 16 "action-arrow" %}
+      </a>
+    </li>
+  {% endfor %}
+</ol>
+{% endblock %}

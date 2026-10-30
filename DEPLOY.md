@@ -33,7 +33,7 @@ python manage.py migrate
 ```
 
 Afterwards, Supabase's **Table Editor** shows `tracker_user`, `tracker_checkin`,
-`tracker_urgelog` and Django's own tables, each marked as having RLS enabled.
+`tracker_studyentry` and Django's own tables, each marked as having RLS enabled.
 
 ## 3. Deploy on Render
 

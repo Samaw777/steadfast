@@ -10,12 +10,19 @@
       <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}"><span class="nav-icon">{% icon "house" 18 %}</span>Home</a>
       <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}"><span class="nav-icon">{% icon "notebook-pen" 18 %}</span>Check-in</a>
       <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}"><span class="nav-icon">{% icon "book-heart" 18 %}</span>Journal</a>
-      <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}"><span class="nav-icon">{% icon "life-buoy" 18 %}</span>Urge tool</a>
+      <a href="{% url 'study' %}" class="{% if path == 'study' or path == 'study_detail' %}active{% endif %}"><span class="nav-icon">{% icon "book-open" 18 %}</span>Bible study</a>
     </nav>
-    <a href="{% url 'urge' %}" class="side-sos">
-      {% icon "wind" 18 %}
-      <span><strong>Need help now?</strong><small>Breathe through it</small></span>
-    </a>
+    {% if next_study %}
+      <a href="{% url 'study_detail' next_study.slug %}" class="side-sos">
+        {% icon "bookmark" 18 %}
+        <span><strong>Day {{ next_study.day }}: {{ next_study.title }}</strong><small>{{ next_study.passage }}</small></span>
+      </a>
+    {% else %}
+      <a href="{% url 'study' %}" class="side-sos">
+        {% icon "trophy" 18 %}
+        <span><strong>Plan complete</strong><small>Revisit any day</small></span>
+      </a>
+    {% endif %}
     <div class="side-user">
       <span class="avatar">{{ user.display_name|first|upper }}</span>
       <span class="side-user-name">{{ user.display_name }}<small>{{ user.email }}</small></span>
@@ -45,7 +52,7 @@
     <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}">{% icon "house" 20 %}<span>Home</span></a>
     <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}">{% icon "notebook-pen" 20 %}<span>Check-in</span></a>
     <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}">{% icon "book-heart" 20 %}<span>Journal</span></a>
-    <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}">{% icon "life-buoy" 20 %}<span>Urge</span></a>
+    <a href="{% url 'study' %}" class="{% if path == 'study' or path == 'study_detail' %}active{% endif %}">{% icon "book-open" 20 %}<span>Study</span></a>
   </nav>
 </div>
 {% endwith %}

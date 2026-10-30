@@ -106,18 +106,20 @@ class Checkin(models.Model):
         return f"{self.user} — {self.day} ({self.status})"
 
 
-class UrgeLog(models.Model):
-    class Outcome(models.TextChoices):
-        RESISTED = "resisted", "Resisted"
-        RELAPSED = "relapsed", "Relapsed"
+class StudyEntry(models.Model):
+    """A completed day of the Bible study plan, with the person's own reflection."""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="urge_logs")
-    outcome = models.CharField(max_length=10, choices=Outcome.choices)
-    note = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="study_entries")
+    slug = models.SlugField(max_length=60)
+    reflection = models.TextField(blank=True)
+    completed_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["-completed_at"]
+        verbose_name_plural = "study entries"
+        constraints = [
+            models.UniqueConstraint(fields=["user", "slug"], name="one_entry_per_study"),
+        ]
 
     def __str__(self):
-        return f"{self.user} — {self.outcome} at {self.created_at:%Y-%m-%d %H:%M}"
+        return f"{self.user} — {self.slug}"

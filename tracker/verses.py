@@ -1,4 +1,3 @@
-import random
 from dataclasses import dataclass
 from datetime import date
 
@@ -22,15 +21,6 @@ GENERAL = [
     Verse("The Lord is my shepherd, I lack nothing.", "Psalm 23:1"),
 ]
 
-TEMPTATION = [
-    Verse("No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear. But when you are tempted, he will also provide a way out so that you can endure it.", "1 Corinthians 10:13"),
-    Verse("Submit yourselves, then, to God. Resist the devil, and he will flee from you.", "James 4:7"),
-    Verse("Watch and pray so that you will not fall into temptation. The spirit is willing, but the flesh is weak.", "Matthew 26:41"),
-    Verse("I have hidden your word in my heart that I might not sin against you.", "Psalm 119:11"),
-    Verse("Flee from sexual immorality... Therefore honor God with your bodies.", "1 Corinthians 6:18,20"),
-    Verse("Let us throw off everything that hinders and the sin that so easily entangles, and let us run with perseverance the race marked out for us.", "Hebrews 12:1"),
-]
-
 GRACE = [
     Verse("If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness.", "1 John 1:9"),
     Verse("As far as the east is from the west, so far has he removed our transgressions from us.", "Psalm 103:12"),
@@ -41,7 +31,3 @@ GRACE = [
 
 def verse_of_the_day(today: date) -> Verse:
     return GENERAL[today.timetuple().tm_yday % len(GENERAL)]
-
-
-def random_verse(verses: list[Verse]) -> Verse:
-    return random.choice(verses)

@@ -1,28 +1,17 @@
-import random
 from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from . import verses
-from .forms import CheckinForm, SignUpForm
-from .models import Checkin, UrgeLog
-
-DISTRACTIONS = [
-    "Step outside for a few minutes, even just to a doorway or balcony.",
-    "Call or text someone you trust — you don't have to explain why.",
-    "Do 20 push-ups or go for a brisk walk.",
-    "Put on music and change the room you're in.",
-    "Write down what you're feeling right now, in one sentence.",
-    "Splash cold water on your face.",
-    "Pick up a book or podcast you've been meaning to get to.",
-]
-
+from . import studies, verses
+from .forms import CheckinForm, SignUpForm, StudyEntryForm
+from .models import Checkin, StudyEntry
 
 def greeting():
     hour = timezone.localtime().hour
@@ -92,7 +81,7 @@ def home(request):
             "week_checkins": sum(1 for d in week if d["status"]),
             "checked_in_today": week[-1]["status"] is not None,
             "milestones": [{"days": m, "earned": best >= m} for m in MILESTONES],
-            "urges_resisted": user.urge_logs.filter(outcome=UrgeLog.Outcome.RESISTED).count(),
+            "studies_done": user.study_entries.count(),
             "verse": verses.verse_of_the_day(today),
         },
     )
@@ -139,30 +128,65 @@ def journal(request):
     )
 
 
+def study_progress(user):
+    """Which plan days this person has finished, and the next one to do."""
+    done = set(user.study_entries.values_list("slug", flat=True))
+    upcoming = next((study for study in studies.STUDIES if study.slug not in done), None)
+    progress = {
+        "done": done,
+        "count": len(done & studies.BY_SLUG.keys()),
+        "total": len(studies.STUDIES),
+        "next": upcoming,
+        "percent": round(len(done & studies.BY_SLUG.keys()) / len(studies.STUDIES) * 100),
+    }
+    progress["sun_y"] = round(125 - progress["percent"] * 0.85)
+    return progress
+
+
 @login_required
-@require_http_methods(["GET", "POST"])
-def urge(request):
-    confirming_relapse = False
-    outcome = request.POST.get("outcome")
-
-    if request.method == "POST" and outcome == UrgeLog.Outcome.RESISTED:
-        UrgeLog.objects.create(user=request.user, outcome=outcome)
-        return render(request, "tracker/urge_done.html", {"outcome": outcome})
-
-    if request.method == "POST" and outcome == UrgeLog.Outcome.RELAPSED:
-        if "confirm" in request.POST:
-            with transaction.atomic():
-                UrgeLog.objects.create(user=request.user, outcome=outcome)
-                request.user.log_relapse()
-            return render(request, "tracker/urge_done.html", {"outcome": outcome})
-        confirming_relapse = True
-
+def study_index(request):
+    plan = study_progress(request.user)
+    days = [{"study": study, "done": study.slug in plan["done"]} for study in studies.STUDIES]
     return render(
         request,
-        "tracker/urge.html",
+        "tracker/study_index.html",
+        {"plan": plan, "days": days, "plan_title": studies.PLAN_TITLE, "plan_summary": studies.PLAN_SUMMARY},
+    )
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def study_detail(request, slug):
+    study = studies.BY_SLUG.get(slug)
+    if study is None:
+        raise Http404("No such study.")
+    entry = StudyEntry.objects.filter(user=request.user, slug=slug).first()
+    form = StudyEntryForm(request.POST or None, instance=entry)
+
+    if request.method == "POST" and form.is_valid():
+        saved = form.save(commit=False)
+        saved.user = request.user
+        saved.slug = slug
+        saved.save()
+        plan = study_progress(request.user)
+        if plan["next"] is None:
+            messages.success(request, f"You finished {studies.PLAN_TITLE}. Well done!")
+        elif entry is None:
+            messages.success(request, f"Day {study.day} complete. See you tomorrow.")
+        else:
+            messages.success(request, "Reflection saved.")
+        return redirect("study")
+
+    position = studies.STUDIES.index(study)
+    return render(
+        request,
+        "tracker/study_detail.html",
         {
-            "verse": verses.random_verse(verses.TEMPTATION),
-            "distraction": random.choice(DISTRACTIONS),
-            "confirming_relapse": confirming_relapse,
+            "study": study,
+            "form": form,
+            "entry": entry,
+            "total": len(studies.STUDIES),
+            "previous": studies.STUDIES[position - 1] if position > 0 else None,
+            "following": studies.STUDIES[position + 1] if position + 1 < len(studies.STUDIES) else None,
         },
     )

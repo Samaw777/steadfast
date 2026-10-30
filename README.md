@@ -1,8 +1,8 @@
 # Steadfast
 
-A private, single-user recovery tracker: streak counter, daily check-ins with mood and notes,
-a journal of past check-ins, an in-the-moment urge tool, and a rotating scripture verse. Each
-account only ever sees its own data.
+A private faith and habit companion: streak counter, daily check-ins with mood and notes, a
+journal of past check-ins, a 14-day Bible study plan with private reflections, and a rotating
+scripture verse. Each account only ever sees its own data.
 
 ## Stack
 
@@ -17,8 +17,9 @@ account only ever sees its own data.
 ```
 config/            Django project: settings, root URLs, WSGI
 tracker/           The app: models, views, forms, tests
-  models.py        User (email login + streak state), Checkin, UrgeLog
-  views.py         Home, check-in, journal, urge tool, sign-up
+  models.py        User (email login + streak state), Checkin, StudyEntry
+  views.py         Home, check-in, journal, Bible study, sign-up
+  studies.py       The Bible study plan: passages, key verses, questions, prayers
   verses.py        Scripture lists and verse-of-the-day
   apps.py          Turns on Row Level Security for every table after `migrate` (see below)
   middleware.py    Uses the browser's timezone so "today" matches your clock
@@ -54,7 +55,7 @@ python manage.py test
 
 Each account has a `last_relapse_at` timestamp (empty until the first slip). The current streak is
 the number of full days since that timestamp, or since sign-up if there hasn't been a slip yet.
-Logging a slip — from the daily check-in or the urge tool — banks the streak that just ended into
+Logging a slip from the daily check-in banks the streak that just ended into
 `longest_streak_days` if it's a new record, then resets the clock. Editing a check-in that was
 already marked as a slip doesn't reset the clock a second time.
 

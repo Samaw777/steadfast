@@ -1,0 +1,60 @@
+{% extends "app.html" %}
+{% load icons %}
+
+{% block title %}{{ study.title }} · Bible study · Steadfast{% endblock %}
+
+{% block content %}
+<a href="{% url 'study' %}" class="back-link">{% icon "arrow-right" 16 "flip" %} All days</a>
+
+<header class="page-header">
+  <p class="eyebrow">Day {{ study.day }} of {{ total }}{% if entry %} · Completed{% endif %}</p>
+  <h1>{{ study.title }}</h1>
+</header>
+
+<section class="card passage-card">
+  <div>
+    <p class="eyebrow">Read</p>
+    <p class="passage-ref">{{ study.passage }}</p>
+    <p class="muted">{{ study.intro }}</p>
+  </div>
+  <a href="{{ study.read_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-read">{% icon "book-open" 18 %} Read the passage</a>
+</section>
+
+<section class="card verse-card">
+  <span class="verse-mark">{% icon "quote" 28 %}</span>
+  <p class="eyebrow">Key verse</p>
+  <blockquote class="verse">
+    <p>{{ study.key_verse }}</p>
+    <footer>{{ study.key_ref }} (NIV)</footer>
+  </blockquote>
+</section>
+
+<section class="card">
+  <h2 class="card-title mb-4">{% icon "sparkles" 16 %} Reflect</h2>
+  <ol class="questions">
+    {% for question in study.questions %}<li>{{ question }}</li>{% endfor %}
+  </ol>
+</section>
+
+<form method="post" class="form study-form">
+  {% csrf_token %}
+  <section class="card">
+    <h2 class="card-title mb-4">{% icon "notebook-pen" 16 %} Your reflection <span class="muted">(optional, private)</span></h2>
+    {{ form.reflection }}
+  </section>
+
+  <section class="card prayer-card">
+    <p class="eyebrow">Pray</p>
+    <p class="prayer">{{ study.prayer }}</p>
+  </section>
+
+  <button type="submit" class="btn btn-primary btn-lg study-submit">
+    {% if entry %}Save reflection{% else %}{% icon "check" 18 %} Mark day {{ study.day }} complete{% endif %}
+  </button>
+</form>
+
+<nav class="study-pager">
+  {% if previous %}<a href="{% url 'study_detail' previous.slug %}">{% icon "arrow-right" 16 "flip" %} Day {{ previous.day }}</a>{% else %}<span></span>{% endif %}
+  {% if following %}<a href="{% url 'study_detail' following.slug %}">Day {{ following.day }} {% icon "arrow-right" 16 %}</a>{% endif %}
+</nav>
+{% endblock %}

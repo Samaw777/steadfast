@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Checkin, UrgeLog, User
+from .models import Checkin, StudyEntry, User
 
 
 class StreakTests(TestCase):
@@ -38,7 +38,7 @@ class StreakTests(TestCase):
 
 class AuthTests(TestCase):
     def test_pages_require_login(self):
-        for name in ["home", "checkin", "journal", "urge"]:
+        for name in ["home", "checkin", "journal", "study"]:
             response = self.client.get(reverse(name))
             self.assertRedirects(response, f"{reverse('login')}?next={reverse(name)}")
 
@@ -103,24 +103,41 @@ class CheckinTests(TestCase):
         self.assertNotContains(response, "not yours")
 
 
-class UrgeTests(TestCase):
+class StudyTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(email="d@example.com", password="pw-long-enough-1")
         self.client.force_login(self.user)
 
-    def test_resisted_is_logged(self):
-        response = self.client.post(reverse("urge"), {"outcome": "resisted"})
-        self.assertContains(response, "That took strength")
-        self.assertEqual(UrgeLog.objects.get().outcome, "resisted")
+    def test_plan_starts_at_day_one(self):
+        response = self.client.get(reverse("study"))
+        self.assertContains(response, "Start day 1")
+        self.assertContains(response, "Built on the rock")
 
-    def test_relapsed_needs_confirmation_then_resets_streak(self):
-        self.client.post(reverse("urge"), {"outcome": "relapsed"})
-        self.assertFalse(UrgeLog.objects.exists())
+    def test_completing_a_day_moves_plan_forward(self):
+        response = self.client.post(
+            reverse("study_detail", args=["built-on-the-rock"]), {"reflection": "Build on what lasts."}
+        )
+        self.assertRedirects(response, reverse("study"))
+        entry = StudyEntry.objects.get(user=self.user)
+        self.assertEqual(entry.reflection, "Build on what lasts.")
+        self.assertContains(self.client.get(reverse("study")), "Continue with day 2")
+        self.assertContains(self.client.get(reverse("home")), "Remain in the vine")
 
-        response = self.client.post(reverse("urge"), {"outcome": "relapsed", "confirm": "1"})
-        self.assertContains(response, "Tomorrow is")
-        self.user.refresh_from_db()
-        self.assertIsNotNone(self.user.last_relapse_at)
+    def test_resaving_updates_the_same_entry(self):
+        url = reverse("study_detail", args=["built-on-the-rock"])
+        self.client.post(url, {"reflection": "First"})
+        self.client.post(url, {"reflection": "Second"})
+        self.assertEqual(StudyEntry.objects.get(user=self.user).reflection, "Second")
+
+    def test_reflections_are_private(self):
+        other = User.objects.create_user(email="o@example.com", password="pw-long-enough-1")
+        StudyEntry.objects.create(user=other, slug="built-on-the-rock", reflection="not yours")
+        response = self.client.get(reverse("study_detail", args=["built-on-the-rock"]))
+        self.assertNotContains(response, "not yours")
+        self.assertContains(response, "Mark day 1 complete")
+
+    def test_unknown_study_is_404(self):
+        self.assertEqual(self.client.get(reverse("study_detail", args=["nope"])).status_code, 404)
 
 
 class MilestoneTests(TestCase):
