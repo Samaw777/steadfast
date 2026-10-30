@@ -4,18 +4,24 @@
 {% block title %}Sign in · Steadfast{% endblock %}
 
 {% block content %}
-<h1>Welcome back</h1>
+<h1>Welcome <em>back</em></h1>
 <p class="lede">Sign in to see your streak and pick up where you left off.</p>
 
 <form method="post" class="form">
   {% csrf_token %}
-  <input type="email" name="username" value="{{ form.username.value|default:'' }}" placeholder="you@example.com" autocomplete="email" required autofocus>
-  <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
-  <a class="forgot" href="{% url 'password_reset' %}">Forgot password?</a>
+  <label class="field">
+    <span>Email</span>
+    <input type="email" name="username" value="{{ form.username.value|default:'' }}" placeholder="you@example.com" autocomplete="email" required autofocus>
+  </label>
+  <label class="field">
+    <span>Password <a class="field-link" href="{% url 'password_reset' %}">Forgot?</a></span>
+    <input type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+  </label>
   {% if form.errors %}<ul class="errors"><li>That email and password don't match an account.</li></ul>{% endif %}
   <input type="hidden" name="next" value="{{ next }}">
-  <button type="submit" class="btn btn-primary">Sign in {% icon "arrow-right" 16 %}</button>
+  <button type="submit" class="btn btn-primary btn-lg">Sign in {% icon "arrow-right" 18 %}</button>
 </form>
 
-<a class="link switch" href="{% url 'signup' %}">New here? Create an account</a>
+<p class="auth-switch">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+<p class="auth-trust">{% icon "lock" 14 %} Private to your account. Nobody else can see your data.</p>
 {% endblock %}

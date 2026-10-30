@@ -1,11 +1,22 @@
 {% extends "base.html" %}
-{% load icons %}
 
 {% block body %}
 <div class="auth">
-  <div class="auth-card">
-    <div class="brand">{% icon "leaf" 20 %} Steadfast</div>
-    {% block content %}{% endblock %}
-  </div>
+  <aside class="auth-art">
+    {% include "_landscape.html" with sun_y=58 align="xMaxYMax" %}
+    <div class="auth-art-copy">
+      <div class="brand brand-light">{% include "_logo.html" %}<span>Steadfast</span></div>
+      <blockquote>
+        <p>&ldquo;Create in me a pure heart, O God, and renew a steadfast spirit within me.&rdquo;</p>
+        <footer>Psalm 51:10</footer>
+      </blockquote>
+    </div>
+  </aside>
+  <section class="auth-main">
+    <div class="auth-card">
+      <div class="brand auth-brand">{% include "_logo.html" %}<span>Steadfast</span></div>
+      {% block content %}{% endblock %}
+    </div>
+  </section>
 </div>
 {% endblock %}

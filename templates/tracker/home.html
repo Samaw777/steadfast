@@ -2,57 +2,96 @@
 {% load icons %}
 
 {% block content %}
-<div class="page-header">
-  <p class="eyebrow">{{ greeting }}</p>
-  <h1>{{ user.display_name }}</h1>
-</div>
+<header class="page-header">
+  <p class="eyebrow">{{ today|date:"l, F j" }}</p>
+  <h1>{{ greeting }}, <em>{{ user.display_name }}</em></h1>
+</header>
 
-<div class="panel streak">
-  <p class="eyebrow">Current streak</p>
-  <p class="streak-number">{{ streak }}</p>
-  <p class="small muted">day{{ streak|pluralize }} steady</p>
-</div>
-
-<div class="grid-2">
-  <div class="panel stat">
-    <p class="stat-label">Longest streak</p>
-    <p class="stat-value">{{ user.longest_streak_days }}</p>
-    <p class="tiny muted">days, so far</p>
-  </div>
-  <div class="panel stat">
-    <p class="stat-label">Check-ins</p>
-    <p class="stat-value">{{ week_checkins }}</p>
-    <p class="tiny muted">in the last 7 days</p>
-  </div>
-</div>
-
-<div class="grid-links">
-  <a href="{% url 'checkin' %}" class="panel link-card">
-    {% if checked_in_today %}
-      {% icon "circle-check" 22 "text-ok" %}
-      <div>
-        <p class="small">Today's check-in is done</p>
-        <p class="tiny muted">You can still edit it</p>
-      </div>
-    {% else %}
-      {% icon "notebook-pen" 22 "text-accent" %}
-      <div>
-        <p class="small">Check in for today</p>
-        <p class="tiny muted">Takes less than a minute</p>
-      </div>
-    {% endif %}
-  </a>
-  <a href="{% url 'urge' %}" class="panel link-card">
-    {% icon "life-buoy" 22 "text-warn" %}
-    <div>
-      <p class="small">Feeling an urge right now?</p>
-      <p class="tiny muted">Open the urge tool</p>
+<section class="hero card">
+  {% include "_landscape.html" with sun_y=progress.sun_y align="xMaxYMax" %}
+  <div class="hero-body">
+    <p class="eyebrow eyebrow-light">Current streak</p>
+    <p class="hero-number">{{ streak }}<span>day{{ streak|pluralize }}</span></p>
+    <div class="hero-progress">
+      <div class="bar"><span style="width: {{ progress.percent }}%"></span></div>
+      <p><strong>{{ progress.days_left }} day{{ progress.days_left|pluralize }}</strong> to your {{ progress.next }}-day milestone</p>
     </div>
-  </a>
-</div>
+  </div>
+</section>
 
-<section class="panel">
-  <h2 class="panel-title">Verse for today</h2>
+<section class="card week-card">
+  <div class="card-head">
+    <h2 class="card-title">{% icon "calendar-days" 16 %} This week</h2>
+    <span class="chip">{{ week_checkins }}/7 checked in</span>
+  </div>
+  <div class="week">
+    {% for d in week %}
+      <div class="day{% if d.is_today %} today{% endif %}">
+        <span class="day-name">{{ d.day|date:"D"|slice:":2" }}</span>
+        <span class="day-tile day-{{ d.status|default:'none' }}" title="{{ d.day|date:'l, M j' }}">
+          {% if d.status == "clean" %}{% icon "check" 16 %}{% elif d.status == "relapse" %}<i></i>{% endif %}
+        </span>
+        <span class="day-date">{{ d.day|date:"j" }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="stats">
+  <div class="card stat">
+    <span class="stat-icon gold">{% icon "trophy" 18 %}</span>
+    <p class="stat-value">{{ best }}</p>
+    <p class="stat-label">Best streak</p>
+  </div>
+  <div class="card stat">
+    <span class="stat-icon green">{% icon "notebook-pen" 18 %}</span>
+    <p class="stat-value">{{ week_checkins }}</p>
+    <p class="stat-label">Check-ins this week</p>
+  </div>
+  <div class="card stat">
+    <span class="stat-icon blue">{% icon "shield-check" 18 %}</span>
+    <p class="stat-value">{{ urges_resisted }}</p>
+    <p class="stat-label">Urges overcome</p>
+  </div>
+</section>
+
+<section class="actions">
+  <a href="{% url 'checkin' %}" class="card action {% if not checked_in_today %}action-primary{% endif %}">
+    <span class="action-icon">{% if checked_in_today %}{% icon "circle-check" 22 %}{% else %}{% icon "sunrise" 22 %}{% endif %}</span>
+    <span class="action-text">
+      <strong>{% if checked_in_today %}Today's check-in is done{% else %}Check in for today{% endif %}</strong>
+      <small>{% if checked_in_today %}Tap to edit your entry{% else %}Takes less than a minute{% endif %}</small>
+    </span>
+    {% icon "arrow-right" 18 "action-arrow" %}
+  </a>
+  <a href="{% url 'urge' %}" class="card action action-warm">
+    <span class="action-icon">{% icon "wind" 22 %}</span>
+    <span class="action-text">
+      <strong>Feeling an urge?</strong>
+      <small>Breathe through it with the urge tool</small>
+    </span>
+    {% icon "arrow-right" 18 "action-arrow" %}
+  </a>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2 class="card-title">{% icon "mountain" 16 %} The climb</h2>
+    <span class="chip">Next: {{ progress.next }} days</span>
+  </div>
+  <ol class="trail">
+    {% for m in milestones %}
+      <li class="{% if m.earned %}earned{% endif %}{% if m.days == progress.next %} next{% endif %}">
+        <span class="node">{% if m.earned %}{% icon "check" 14 %}{% else %}{{ forloop.counter }}{% endif %}</span>
+        <span class="trail-label">{{ m.days }}<small>day{{ m.days|pluralize }}</small></span>
+      </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section class="card verse-card">
+  <span class="verse-mark">{% icon "quote" 28 %}</span>
+  <p class="eyebrow">Verse for today</p>
   {% include "tracker/_verse.html" %}
 </section>
 {% endblock %}

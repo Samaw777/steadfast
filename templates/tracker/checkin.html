@@ -1,44 +1,63 @@
 {% extends "app.html" %}
+{% load icons %}
 
 {% block title %}Check-in · Steadfast{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<header class="page-header">
   <p class="eyebrow">{{ today|date:"l, F j" }}</p>
-  <h1>Daily check-in</h1>
-</div>
+  <h1>Daily <em>check-in</em></h1>
+</header>
 
-<section class="panel">
-  <h2 class="panel-title">How did today go?</h2>
-  <form method="post" class="form">
-    {% csrf_token %}
-    <div class="choices status-choices">
+<form method="post" class="form stack-lg">
+  {% csrf_token %}
+
+  <section class="card">
+    <h2 class="card-title mb-4">How did today go?</h2>
+    <div class="choice-cards">
       {% for radio in form.status %}
-        <label>{{ radio.tag }}<span>{% if radio.data.value == "clean" %}I stayed steady{% else %}I slipped{% endif %}</span></label>
+        <label class="choice-card choice-{{ radio.data.value }}">
+          {{ radio.tag }}
+          <span class="choice-body">
+            <span class="choice-icon">{% if radio.data.value == "clean" %}{% icon "sun" 22 %}{% else %}{% icon "cloud-rain" 22 %}{% endif %}</span>
+            <strong>{% if radio.data.value == "clean" %}I stayed steady{% else %}I slipped{% endif %}</strong>
+            <small>{% if radio.data.value == "clean" %}Another day on the mountain{% else %}It happens. Grace is new today{% endif %}</small>
+          </span>
+        </label>
       {% endfor %}
     </div>
+  </section>
 
-    <p class="eyebrow mb-2">Mood</p>
-    <div class="choices compact">
+  <section class="card">
+    <h2 class="card-title mb-4">How are you feeling?</h2>
+    <div class="moods">
       {% for radio in form.mood %}
-        <label title="{{ radio.choice_label }}">{{ radio.tag }}<span>{{ radio.data.value }}</span></label>
+        <label class="mood mood-{{ radio.data.value }}">
+          {{ radio.tag }}
+          <span class="mood-body">
+            <span class="mood-orb"></span>
+            <small>{{ radio.choice_label }}</small>
+          </span>
+        </label>
       {% endfor %}
     </div>
+  </section>
 
-    <p class="eyebrow mb-2">Notes (optional)</p>
+  <section class="card">
+    <h2 class="card-title mb-4">Notes <span class="muted">(optional)</span></h2>
     {{ form.note }}
+  </section>
 
-    {% include "registration/_errors.html" %}
+  {% include "registration/_errors.html" %}
 
-    {% if confirming_relapse %}
-      <input type="hidden" name="confirm" value="1">
-      <p class="small text-danger mb-4">
-        This will reset your streak counter. Your longest streak stays saved. Tap &ldquo;Confirm and save&rdquo; to go ahead.
-      </p>
-      <button type="submit" class="btn btn-primary">Confirm and save check-in</button>
-    {% else %}
-      <button type="submit" class="btn btn-primary">Save check-in</button>
-    {% endif %}
-  </form>
-</section>
+  {% if confirming_relapse %}
+    <input type="hidden" name="confirm" value="1">
+    <div class="notice notice-danger">
+      This resets your streak counter. Your best streak stays saved. Tap &ldquo;Confirm and save&rdquo; to go ahead.
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg">Confirm and save check-in</button>
+  {% else %}
+    <button type="submit" class="btn btn-primary btn-lg">Save check-in {% icon "arrow-right" 18 %}</button>
+  {% endif %}
+</form>
 {% endblock %}

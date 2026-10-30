@@ -4,18 +4,21 @@
 {% block title %}Create account · Steadfast{% endblock %}
 
 {% block content %}
-<h1>Start your journey</h1>
-<p class="lede">Your data is private to your account. One day at a time.</p>
+<h1>Start your <em>journey</em></h1>
+<p class="lede">One day at a time. Your data stays private to your account.</p>
 
 <form method="post" class="form">
   {% csrf_token %}
-  {{ form.name }}
-  {{ form.email }}
-  {{ form.password1 }}
-  {{ form.password2 }}
+  <label class="field"><span>Your name</span>{{ form.name }}</label>
+  <label class="field"><span>Email</span>{{ form.email }}</label>
+  <div class="field-row">
+    <label class="field"><span>Password</span>{{ form.password1 }}</label>
+    <label class="field"><span>Confirm</span>{{ form.password2 }}</label>
+  </div>
   {% include "registration/_errors.html" %}
-  <button type="submit" class="btn btn-primary">Create account {% icon "arrow-right" 16 %}</button>
+  <button type="submit" class="btn btn-primary btn-lg">Create account {% icon "arrow-right" 18 %}</button>
 </form>
 
-<a class="link switch" href="{% url 'login' %}">Already have an account? Sign in</a>
+<p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+<p class="auth-trust">{% icon "lock" 14 %} Private to your account. Nobody else can see your data.</p>
 {% endblock %}

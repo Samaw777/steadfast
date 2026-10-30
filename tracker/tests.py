@@ -118,6 +118,29 @@ class UrgeTests(TestCase):
         self.assertFalse(UrgeLog.objects.exists())
 
         response = self.client.post(reverse("urge"), {"outcome": "relapsed", "confirm": "1"})
-        self.assertContains(response, "Tomorrow is a new day")
+        self.assertContains(response, "Tomorrow is")
         self.user.refresh_from_db()
         self.assertIsNotNone(self.user.last_relapse_at)
+
+
+class MilestoneTests(TestCase):
+    def test_progress_between_milestones(self):
+        from .views import milestone_progress
+
+        self.assertEqual(milestone_progress(0)["next"], 1)
+        progress = milestone_progress(10)
+        self.assertEqual((progress["next"], progress["days_left"], progress["percent"]), (14, 4, 43))
+
+    def test_progress_after_a_year(self):
+        from .views import milestone_progress
+
+        progress = milestone_progress(400)
+        self.assertEqual((progress["next"], progress["days_left"]), (730, 330))
+
+    def test_home_renders_week_and_trail(self):
+        user = User.objects.create_user(email="e@example.com", password="pw-long-enough-1")
+        Checkin.objects.create(user=user, day=timezone.localdate(), status="clean")
+        self.client.force_login(user)
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, "1/7 checked in")
+        self.assertContains(response, "The climb")

@@ -45,19 +45,54 @@ def signup(request):
     return render(request, "registration/signup.html", {"form": form})
 
 
+MILESTONES = [1, 3, 7, 14, 30, 60, 90, 180, 365]
+
+
+def milestone_progress(streak):
+    """Where the streak sits between the last milestone reached and the next one."""
+    previous = max([m for m in MILESTONES if m <= streak], default=0)
+    upcoming = next((m for m in MILESTONES if m > streak), None)
+    if upcoming is None:  # past a year: aim for the next full year
+        previous = streak // 365 * 365
+        upcoming = previous + 365
+    percent = round((streak - previous) / (upcoming - previous) * 100)
+    return {
+        "next": upcoming,
+        "days_left": upcoming - streak,
+        "percent": percent,
+        # The hero's sun climbs from just behind the ridge (y=125) toward the top of the sky (y=40).
+        "sun_y": round(125 - percent * 0.85),
+    }
+
+
+def week_strip(user, today):
+    """The last 7 days, oldest first, each with that day's check-in status (or None)."""
+    days = [today - timedelta(days=offset) for offset in range(6, -1, -1)]
+    statuses = dict(user.checkins.filter(day__gte=days[0]).values_list("day", "status"))
+    return [{"day": day, "status": statuses.get(day), "is_today": day == today} for day in days]
+
+
 @login_required
 def home(request):
     user = request.user
     today = timezone.localdate()
-    checkins = user.checkins.all()
+    streak = user.current_streak_days()
+    week = week_strip(user, today)
+    best = max(streak, user.longest_streak_days)
     return render(
         request,
         "tracker/home.html",
         {
             "greeting": greeting(),
-            "streak": user.current_streak_days(),
-            "week_checkins": checkins.filter(day__gt=today - timedelta(days=7)).count(),
-            "checked_in_today": checkins.filter(day=today).exists(),
+            "today": today,
+            "streak": streak,
+            "best": best,
+            "progress": milestone_progress(streak),
+            "week": week,
+            "week_checkins": sum(1 for d in week if d["status"]),
+            "checked_in_today": week[-1]["status"] is not None,
+            "milestones": [{"days": m, "earned": best >= m} for m in MILESTONES],
+            "urges_resisted": user.urge_logs.filter(outcome=UrgeLog.Outcome.RESISTED).count(),
             "verse": verses.verse_of_the_day(today),
         },
     )

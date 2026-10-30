@@ -4,47 +4,49 @@
 {% block body %}
 {% with path=request.resolver_match.url_name %}
 <div class="shell">
-  <div class="topbar">
-    <div class="brand">{% icon "leaf" 16 %} Steadfast</div>
-    <div class="topbar-user">
-      <span>{{ user.display_name }}</span>
+  <aside class="sidebar">
+    <a href="{% url 'home' %}" class="brand">{% include "_logo.html" %}<span>Steadfast</span></a>
+    <nav class="side-nav">
+      <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}"><span class="nav-icon">{% icon "house" 18 %}</span>Home</a>
+      <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}"><span class="nav-icon">{% icon "notebook-pen" 18 %}</span>Check-in</a>
+      <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}"><span class="nav-icon">{% icon "book-heart" 18 %}</span>Journal</a>
+      <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}"><span class="nav-icon">{% icon "life-buoy" 18 %}</span>Urge tool</a>
+    </nav>
+    <a href="{% url 'urge' %}" class="side-sos">
+      {% icon "wind" 18 %}
+      <span><strong>Need help now?</strong><small>Breathe through it</small></span>
+    </a>
+    <div class="side-user">
+      <span class="avatar">{{ user.display_name|first|upper }}</span>
+      <span class="side-user-name">{{ user.display_name }}<small>{{ user.email }}</small></span>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
-        <button type="submit" class="icon-button" title="Sign out">{% icon "log-out" 18 %}</button>
+        <button type="submit" class="icon-button" title="Sign out">{% icon "log-out" 16 %}</button>
       </form>
     </div>
-  </div>
+  </aside>
 
-  <nav class="tabbar">
-    <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}">{% icon "house" 19 %}Home</a>
-    <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}">{% icon "notebook-pen" 19 %}Check-in</a>
-    <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}">{% icon "book-heart" 19 %}Journal</a>
-    <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}">{% icon "life-buoy" 19 %}Urge</a>
-  </nav>
-
-  <nav class="sidebar">
-    <div class="brand">{% icon "leaf" 16 %} Steadfast</div>
-    <div class="sidebar-links">
-      <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}">{% icon "house" 16 %}Home</a>
-      <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}">{% icon "notebook-pen" 16 %}Check-in</a>
-      <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}">{% icon "book-heart" 16 %}Journal</a>
-      <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}">{% icon "life-buoy" 16 %}Urge Tool</a>
-    </div>
-    <div class="sidebar-footer">
-      <span>{{ user.display_name }}</span>
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="icon-button" title="Sign out">{% icon "log-out" 14 %}</button>
-      </form>
-    </div>
-  </nav>
+  <header class="topbar">
+    <a href="{% url 'home' %}" class="brand">{% include "_logo.html" %}<span>Steadfast</span></a>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="icon-button" title="Sign out">{% icon "log-out" 18 %}</button>
+    </form>
+  </header>
 
   <main class="main">
     {% for message in messages %}
-      <p class="flash">{{ message }}</p>
+      <div class="toast">{% icon "circle-check" 18 %}<span>{{ message }}</span></div>
     {% endfor %}
     {% block content %}{% endblock %}
   </main>
+
+  <nav class="tabbar">
+    <a href="{% url 'home' %}" class="{% if path == 'home' %}active{% endif %}">{% icon "house" 20 %}<span>Home</span></a>
+    <a href="{% url 'checkin' %}" class="{% if path == 'checkin' %}active{% endif %}">{% icon "notebook-pen" 20 %}<span>Check-in</span></a>
+    <a href="{% url 'journal' %}" class="{% if path == 'journal' %}active{% endif %}">{% icon "book-heart" 20 %}<span>Journal</span></a>
+    <a href="{% url 'urge' %}" class="{% if path == 'urge' %}active{% endif %}">{% icon "life-buoy" 20 %}<span>Urge</span></a>
+  </nav>
 </div>
 {% endwith %}
 {% endblock %}

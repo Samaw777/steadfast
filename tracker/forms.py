@@ -11,14 +11,14 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ["name", "email"]
         widgets = {
-            "name": forms.TextInput(attrs={"placeholder": "Your name", "autofocus": True}),
+            "name": forms.TextInput(attrs={"placeholder": "What should we call you?", "autofocus": True}),
             "email": forms.EmailInput(attrs={"placeholder": "you@example.com"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["password1"].widget.attrs["placeholder"] = "Password"
-        self.fields["password2"].widget.attrs["placeholder"] = "Confirm password"
+        self.fields["password1"].widget.attrs["placeholder"] = "••••••••"
+        self.fields["password2"].widget.attrs["placeholder"] = "••••••••"
         for field in self.fields.values():
             field.help_text = ""
 

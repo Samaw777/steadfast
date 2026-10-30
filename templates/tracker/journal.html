@@ -1,27 +1,48 @@
 {% extends "app.html" %}
+{% load icons %}
 
 {% block title %}Journal · Steadfast{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<header class="page-header">
   <p class="eyebrow">Your history</p>
-  <h1>Journal</h1>
-</div>
+  <h1><em>Journal</em></h1>
+</header>
 
 {% if entries %}
-  <div class="entries">
+  <ol class="timeline">
     {% for entry in entries %}
-      <article class="panel entry">
-        <div class="entry-top">
-          <p class="small">{{ entry.day|date:"D, M j" }}{% if entry.day.year != today.year %}, {{ entry.day.year }}{% endif %}</p>
-          <span class="pill {% if entry.status == 'clean' %}text-ok{% else %}text-danger{% endif %}">{{ entry.get_status_display }}</span>
+      <li class="timeline-item">
+        <div class="timeline-date">
+          <strong>{{ entry.day|date:"j" }}</strong>
+          <small>{{ entry.day|date:"M" }}{% if entry.day.year != today.year %} {{ entry.day.year }}{% endif %}</small>
         </div>
-        {% if entry.mood %}<p class="tiny muted mb-1">Mood: {{ entry.get_mood_display }}</p>{% endif %}
-        {% if entry.note %}<p class="entry-note">{{ entry.note }}</p>{% endif %}
-      </article>
+        <span class="timeline-dot dot-{{ entry.status }}"></span>
+        <article class="card entry">
+          <div class="entry-top">
+            <span class="entry-day">{{ entry.day|date:"l" }}</span>
+            <span class="pill pill-{{ entry.status }}">
+              {% if entry.status == "clean" %}{% icon "sun" 12 %}{% else %}{% icon "cloud-rain" 12 %}{% endif %}
+              {{ entry.get_status_display }}
+            </span>
+          </div>
+          {% if entry.mood %}
+            <div class="mood-meter" title="Mood: {{ entry.get_mood_display }}">
+              <span class="meter">{% for i in "12345" %}<i class="{% if forloop.counter <= entry.mood %}on m{{ entry.mood }}{% endif %}"></i>{% endfor %}</span>
+              <small>{{ entry.get_mood_display }}</small>
+            </div>
+          {% endif %}
+          {% if entry.note %}<p class="entry-note">{{ entry.note }}</p>{% endif %}
+        </article>
+      </li>
     {% endfor %}
-  </div>
+  </ol>
 {% else %}
-  <p class="small muted">No check-ins yet. Your first one will show up here.</p>
+  <section class="card empty">
+    <div class="empty-art">{% include "_landscape.html" with sun_y=150 %}</div>
+    <h2>Your story starts here</h2>
+    <p class="muted">Every check-in you save shows up in this journal.</p>
+    <a href="{% url 'checkin' %}" class="btn btn-primary">Write today's check-in {% icon "arrow-right" 18 %}</a>
+  </section>
 {% endif %}
 {% endblock %}

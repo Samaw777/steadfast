@@ -4,15 +4,18 @@
 {% block title %}Urge tool · Steadfast{% endblock %}
 
 {% block content %}
-<div class="done">
-  <div class="text-accent mb-4">{% icon "check" 32 %}</div>
-  {% if outcome == "resisted" %}
-    <p class="head mb-2" style="font-size: 1.125rem">That took strength. Well done.</p>
-    <p class="small muted lede">This moment is logged. Every time you get through one of these, it gets a little easier.</p>
-  {% else %}
-    <p class="head mb-2" style="font-size: 1.125rem">Tomorrow is a new day.</p>
-    <p class="small muted lede">Your longest streak is saved. Log today's check-in when you're ready and start again.</p>
-  {% endif %}
-  <a href="{% url 'home' %}" class="small link-accent">Back to home</a>
-</div>
+<section class="card done">
+  <div class="done-art">{% include "_landscape.html" with sun_y=55 %}</div>
+  <div class="done-body">
+    <span class="done-icon">{% if outcome == "resisted" %}{% icon "shield-check" 28 %}{% else %}{% icon "sunrise" 28 %}{% endif %}</span>
+    {% if outcome == "resisted" %}
+      <h1>That took strength. <em>Well done.</em></h1>
+      <p class="muted">This moment is logged. Every time you get through one of these, the next gets a little easier.</p>
+    {% else %}
+      <h1>Tomorrow is <em>a new day.</em></h1>
+      <p class="muted">Your best streak is saved. Log today's check-in when you're ready and start the climb again.</p>
+    {% endif %}
+    <a href="{% url 'home' %}" class="btn btn-primary">Back to home {% icon "arrow-right" 18 %}</a>
+  </div>
+</section>
 {% endblock %}

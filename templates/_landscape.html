@@ -1,0 +1,47 @@
+{% comment %}
+  Dawn over the mountains. Pass sun_y (40 = high in the sky, 150 = behind the ridge);
+  align="xMaxYMax" keeps the sun in frame in tall containers.
+{% endcomment %}
+<svg class="landscape" viewBox="0 0 400 200" preserveAspectRatio="{{ align|default:'xMidYMax' }} slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1b24" />
+      <stop offset=".55" stop-color="#173a40" />
+      <stop offset=".85" stop-color="#4f6a5a" />
+      <stop offset="1" stop-color="#c98d5c" />
+    </linearGradient>
+    <radialGradient id="sun-glow">
+      <stop offset="0" stop-color="#ffd59a" stop-opacity=".55" />
+      <stop offset="1" stop-color="#ffd59a" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="sun-disc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3d6" />
+      <stop offset="1" stop-color="#f6b46a" />
+    </linearGradient>
+    <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0" />
+      <stop offset=".5" stop-color="#fff" stop-opacity=".07" />
+      <stop offset="1" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="200" fill="url(#sky)" />
+
+  <g class="stars" fill="#fff">
+    <circle cx="30" cy="22" r=".9" /><circle cx="78" cy="48" r=".7" /><circle cx="122" cy="18" r="1.1" />
+    <circle cx="168" cy="40" r=".6" /><circle cx="214" cy="14" r=".9" /><circle cx="252" cy="34" r=".7" />
+    <circle cx="352" cy="20" r="1" /><circle cx="384" cy="46" r=".6" /><circle cx="56" cy="70" r=".5" />
+    <circle cx="190" cy="66" r=".6" /><circle cx="330" cy="58" r=".5" /><circle cx="98" cy="30" r=".5" />
+  </g>
+
+  <g class="sun" style="--sun-y: {{ sun_y|default:70 }}px">
+    <circle cx="345" cy="0" r="70" fill="url(#sun-glow)" />
+    <circle cx="345" cy="0" r="17" fill="url(#sun-disc)" />
+  </g>
+
+  <path fill="#28474c" d="M0 140 L40 112 L75 128 L120 80 L160 118 L200 96 L245 124 L290 70 L335 112 L370 94 L400 108 V200 H0 Z" />
+  <path fill="#e8f0ec" fill-opacity=".55" d="M290 70 L279 84 L286 81 L291 86 L296 80 L302 84 Z M120 80 L111 92 L117 90 L121 94 L126 89 L131 92 Z" />
+  <rect y="118" width="400" height="44" fill="url(#mist)" />
+  <path fill="#18343a" d="M0 162 L52 128 L92 150 L140 112 L186 148 L230 124 L276 152 L322 118 L362 146 L400 130 V200 H0 Z" />
+  <path fill="#0f2327" d="M0 180 C60 162 102 172 152 160 C212 146 252 176 312 163 C352 155 382 167 400 161 V200 H0 Z" />
+</svg>
